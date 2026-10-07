@@ -1,5 +1,7 @@
 # QA Automation Suite: Web, API & Security Testing
 
+![QA Regression](https://github.com/farhanxansari/qa-automation-suite/actions/workflows/qa.yml/badge.svg)
+
 End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a realistic e-commerce web app with real defects, using **Playwright (Python)**, **Pytest**, **REST API contract tests**, and a **Jira-style defect workflow** run in CI on every push.
 
 **Result:** 23 test cases (25 executions with parametrisation): 16 pass, **9 fail on 7 real defects** (SQL-injection auth bypass, DOM XSS, IDOR, broken access control, negative basket quantity, data exposure, missing validation). Each defect has a bug report and a regression test.
