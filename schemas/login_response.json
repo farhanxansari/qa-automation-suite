@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["authentication"],
+  "properties": {
+    "authentication": {
+      "type": "object",
+      "required": ["token", "bid", "umail"],
+      "properties": {
+        "token": {"type": "string", "pattern": "^[\\w-]+\\.[\\w-]+\\.[\\w-]+$"},
+        "bid": {"type": "integer"},
+        "umail": {"type": "string", "format": "email"}
+      }
+    }
+  }
+}

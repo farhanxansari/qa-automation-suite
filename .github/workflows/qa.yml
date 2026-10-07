@@ -1,0 +1,32 @@
+name: QA Regression
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      juice-shop:
+        image: bkimminich/juice-shop:latest
+        ports: ["3000:3000"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Install deps
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+      - name: Wait for app
+        run: timeout 90 bash -c 'until curl -sf http://localhost:3000 > /dev/null; do sleep 2; done'
+      - name: P0 smoke
+        run: pytest -m p0 --html=reports/smoke.html --self-contained-html
+      - name: Full regression
+        if: always()
+        run: pytest --html=reports/regression.html --self-contained-html --junitxml=reports/junit.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: test-reports, path: reports/ }
