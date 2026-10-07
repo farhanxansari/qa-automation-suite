@@ -29,5 +29,6 @@
 | TC_API_HDR_02 | Headers | Content-Security-Policy present | API/Security | P1 | ✅ | Fail → BUG-008 |
 | TC_API_HDR_03 | Headers | No X-Powered-By tech-stack leak | API/Security | P2 | ✅ | Pass |
 | TC_API_HDR_04 | Headers | HSTS present (HTTPS only) | API/Security | P2 | ✅ | Skipped (N/A on HTTP) |
+| TC_SESSION_01 | Session | Token cookie has HttpOnly flag | UI/Security | P1 | ✅ | Fail → BUG-009 |
 
 **Add these next:** checkout flow, address/payment forms, password reset, product reviews, rate limiting on login.

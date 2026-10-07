@@ -10,4 +10,4 @@
 | [BUG-006](BUG-006.md) | Non-admin user can list all registered users | Access Control API | High | P0 | Open |
 | [BUG-007](BUG-007.md) | /ftp directory listing exposes confidential files | Server config | Medium | P1 | Open |
 | [BUG-008](BUG-008.md) | Content-Security-Policy header missing | Security headers | Medium | P1 | Open |
-
+| [BUG-009](BUG-009.md) | Session token cookie missing HttpOnly flag | Session management | High | P1 | Open |

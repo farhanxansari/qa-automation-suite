@@ -4,7 +4,7 @@
 
 End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a realistic e-commerce web app with real defects, using **Playwright (Python)**, **Pytest**, **REST API contract tests**, and a **Jira defect workflow** run in **GitHub Actions CI** on every push.
 
-**Result:** 27 test cases (30 executions with parametrisation): **19 pass, 10 fail on 8 real defects, 1 skipped by design**, including a SQL-injection login bypass, DOM XSS, IDOR, broken access control, a negative basket quantity, data exposure, and a missing CSP. Each defect is reproduced by hand, logged in Jira, and covered by a regression test.
+**Result:** 28 test cases (31 executions with parametrisation): **19 pass, 11 fail on 9 real defects, 1 skipped by design**, including a SQL-injection login bypass, DOM XSS, IDOR, broken access control, session-token exposure, a negative basket quantity, data exposure, and a missing CSP. Each defect is reproduced by hand, logged in Jira, and covered by a regression test.
 
 ![Test report](docs/images/report.png)
 
@@ -20,6 +20,15 @@ End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a
 | [BUG-006](docs/bugs/BUG-006.md) | QA-11 | Non-admin user can list all registered users | High | P0 |
 | [BUG-007](docs/bugs/BUG-007.md) | QA-10 | `/ftp` directory listing exposes confidential files | Medium | P1 |
 | [BUG-008](docs/bugs/BUG-008.md) | QA-16 | Content-Security-Policy header missing | Medium | P1 |
+| [BUG-009](docs/bugs/BUG-009.md) | QA-17 | Session token cookie missing HttpOnly flag | High | P1 |
+
+### Attack chain: three findings combine into account takeover
+
+1. **BUG-002:** attacker-controlled script runs through the search box (DOM XSS)
+2. **BUG-008:** no Content-Security-Policy is in place to block it
+3. **BUG-009:** the script reads the session JWT from `document.cookie` because the cookie isn't HttpOnly
+
+**Impact:** a single malicious link can steal a logged-in user's session. Fixing any one of the three breaks the chain; fixing all three is defence in depth.
 
 ### Jira sprint board
 
@@ -39,7 +48,7 @@ End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a
 
 ```
 pages/          Page Object Model (login, search)
-tests/ui/       Browser tests: login, search, admin access
+tests/ui/       Browser tests: login, search, admin access, session security
 tests/api/      API tests: auth, products, basket, access control, security headers
 schemas/        JSON Schemas for API contract checks
 utils/          API client, test-data factory, schema helper
@@ -62,7 +71,7 @@ playwright install chromium
 # 3. Run
 pytest                          # full regression
 pytest -m p0                    # smoke: release blockers only
-pytest -m "api and security"    # security API checks
+pytest -m security              # all security checks (UI + API)
 pytest --headed -m ui           # watch the browser
 pytest --html=reports/report.html --self-contained-html
 ```
@@ -73,7 +82,7 @@ pytest --html=reports/report.html --self-contained-html
 - **Independent tests:** each test registers its own user through the API, so tests never share state and can run in any order.
 - **Contract testing:** API responses are validated against JSON Schemas, not just status codes.
 - **Negative and boundary cases:** invalid credentials, tampered JWTs, duplicate registration, quantity 0 / -1.
-- **Security focus:** injection, IDOR, broken access control, data exposure, and security headers.
+- **Security focus:** injection, IDOR, broken access control, data exposure, security headers, and session cookie flags.
 - **Environment-aware:** checks that don't apply to the test environment (e.g. HSTS over plain HTTP) are skipped with a documented reason rather than reported as false bugs.
 
 ## How known bugs are handled
@@ -105,4 +114,5 @@ with `xfail_strict = true` set globally in `pytest.ini`.
 - [ ] Password reset flow
 - [ ] Login rate-limiting check
 - [x] Security headers (CSP, X-Frame-Options, X-Content-Type-Options)
+- [x] Session cookie flags (HttpOnly)
 - [ ] Desktop app testing with Playwright's Electron support
