@@ -25,5 +25,9 @@
 | TC_API_ACCESS_01 | Access | Cannot read another user's basket (IDOR) | API/Security | P0 | ✅ | Fail → BUG-005 |
 | TC_API_ACCESS_02 | Access | Non-admin cannot list all users | API/Security | P0 | ✅ | Fail → BUG-006 |
 | TC_API_ACCESS_03 | Access | /ftp not publicly listed | API/Security | P1 | ✅ | Fail → BUG-007 |
+| TC_API_HDR_01 | Headers | X-Content-Type-Options / X-Frame-Options have safe values | API/Security | P1 | ✅ | Pass |
+| TC_API_HDR_02 | Headers | Content-Security-Policy present | API/Security | P1 | ✅ | Fail → BUG-008 |
+| TC_API_HDR_03 | Headers | No X-Powered-By tech-stack leak | API/Security | P2 | ✅ | Pass |
+| TC_API_HDR_04 | Headers | HSTS present (HTTPS only) | API/Security | P2 | ✅ | Skipped (N/A on HTTP) |
 
-**Add these next:** checkout flow, address/payment forms, password reset, product reviews, rate limiting on login, security headers (CSP, X-Frame-Options).
+**Add these next:** checkout flow, address/payment forms, password reset, product reviews, rate limiting on login.

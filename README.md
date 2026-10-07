@@ -4,7 +4,7 @@
 
 End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a realistic e-commerce web app with real defects, using **Playwright (Python)**, **Pytest**, **REST API contract tests**, and a **Jira defect workflow** run in **GitHub Actions CI** on every push.
 
-**Result:** 23 test cases (25 executions with parametrisation): **16 pass, 9 fail on 7 real defects**, including a SQL-injection login bypass, DOM XSS, IDOR, broken access control, a negative basket quantity, and data exposure. Each defect is reproduced by hand, logged in Jira, and covered by a regression test.
+**Result:** 27 test cases (30 executions with parametrisation): **19 pass, 10 fail on 8 real defects, 1 skipped by design**, including a SQL-injection login bypass, DOM XSS, IDOR, broken access control, a negative basket quantity, data exposure, and a missing CSP. Each defect is reproduced by hand, logged in Jira, and covered by a regression test.
 
 ![Test report](docs/images/report.png)
 
@@ -19,6 +19,7 @@ End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a
 | [BUG-005](docs/bugs/BUG-005.md) | QA-12 | IDOR: user can read another user's basket | High | P0 |
 | [BUG-006](docs/bugs/BUG-006.md) | QA-11 | Non-admin user can list all registered users | High | P0 |
 | [BUG-007](docs/bugs/BUG-007.md) | QA-10 | `/ftp` directory listing exposes confidential files | Medium | P1 |
+| [BUG-008](docs/bugs/BUG-008.md) | QA-16 | Content-Security-Policy header missing | Medium | P1 |
 
 ### Jira sprint board
 
@@ -39,7 +40,7 @@ End-to-end QA of [OWASP Juice Shop](https://github.com/juice-shop/juice-shop), a
 ```
 pages/          Page Object Model (login, search)
 tests/ui/       Browser tests: login, search, admin access
-tests/api/      API tests: auth, products, basket, access control
+tests/api/      API tests: auth, products, basket, access control, security headers
 schemas/        JSON Schemas for API contract checks
 utils/          API client, test-data factory, schema helper
 docs/           Test plan, test cases, bug reports, screenshots
@@ -72,7 +73,8 @@ pytest --html=reports/report.html --self-contained-html
 - **Independent tests:** each test registers its own user through the API, so tests never share state and can run in any order.
 - **Contract testing:** API responses are validated against JSON Schemas, not just status codes.
 - **Negative and boundary cases:** invalid credentials, tampered JWTs, duplicate registration, quantity 0 / -1.
-- **Security focus:** injection, IDOR, broken access control, and data exposure checks.
+- **Security focus:** injection, IDOR, broken access control, data exposure, and security headers.
+- **Environment-aware:** checks that don't apply to the test environment (e.g. HSTS over plain HTTP) are skipped with a documented reason rather than reported as false bugs.
 
 ## How known bugs are handled
 
@@ -102,5 +104,5 @@ with `xfail_strict = true` set globally in `pytest.ini`.
 - [ ] Checkout and payment flow tests
 - [ ] Password reset flow
 - [ ] Login rate-limiting check
-- [ ] Security headers (CSP, X-Frame-Options)
+- [x] Security headers (CSP, X-Frame-Options, X-Content-Type-Options)
 - [ ] Desktop app testing with Playwright's Electron support
